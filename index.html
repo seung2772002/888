@@ -1,0 +1,67 @@
+import pygame
+import random
+
+# 게임 설정
+SCREEN_WIDTH = 300
+SCREEN_HEIGHT = 600
+BLOCK_SIZE = 30
+COLS = 10
+ROWS = 20
+
+# 색상 정의
+WHITE = (255, 255, 255)
+CYAN = (0, 255, 255)
+MAGENTA = (255, 0, 255)
+YELLOW = (255, 255, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+ORANGE = (255, 165, 0)
+
+# 테트리스 모양 정의
+SHAPES = [
+    [[1, 1, 1, 1]],  # I
+    [[1, 1], [1, 1]],  # O
+    [[0, 1, 0], [1, 1, 1]],  # T
+    [[1, 1, 0], [0, 1, 1]],  # S
+    [[0, 1, 1], [1, 1, 0]],  # Z
+    [[1, 0, 0], [1, 1, 1]],  # L
+    [[0, 0, 1], [1, 1, 1]]   # J
+]
+
+SHAPE_COLORS = [CYAN, YELLOW, MAGENTA, GREEN, RED, BLUE, ORANGE]
+
+# 게임 보드 초기화
+def create_board():
+    return [[0] * COLS for _ in range(ROWS)]
+
+# 회전된 모양 계산
+def rotate(shape):
+    return list(zip(*shape[::-1]))
+
+# 충돌 여부 체크
+def check_collision(board, shape, offset):
+    off_x, off_y = offset
+    for cy, row in enumerate(shape):
+        for cx, cell in enumerate(row):
+            if cell:
+                try:
+                    if board[cy + off_y][cx + off_x]:
+                        return True
+                except IndexError:
+                    return True
+    return False
+
+# 테트리미노를 보드에 배치
+def place_shape(board, shape, offset):
+    off_x, off_y = offset
+    for cy, row in enumerate(shape):
+        for cx, cell in enumerate(row):
+            if cell:
+                board[cy + off_y][cx + off_x] = shape[cy][cx]
+
+# 한 줄이 꽉 차면 삭제
+def clear_lines(board):
+    new_board = [row for row in board if any(cell == 0 for cell in row)]
+    new_lines = ROWS - len(new_board)
+    new_board = [[0] * COLS for _ in range(new_l
